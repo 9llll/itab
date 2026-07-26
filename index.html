@@ -1,17 +1,9 @@
-<!-- 
-		发布地址：https://www.ximi.me/post-6040.html
-		版本：v1.02 
-		更新时间：2036-06-07
--->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <title>Ximi AI Navigator - Ultimate</title>
-    <script src="crypto-js.min.js"></script>
-    <script src="link-date.js"></script>
-
-      <style>
+    <style>
         /* 核心变量定义：清爽现代的色带 */
         :root { 
             --bg: #f4f6f8; 
@@ -185,7 +177,7 @@
 }
                 footer { text-align: center; padding: 20px; color: #606060; font-size: 12px; border-top: 1px solid var(--border); }
     </style>
-    
+    <script src="link-date.js"></script>
 </head>
 <body>
 
@@ -203,6 +195,7 @@
             <input type="text" id="searchInput" class="search-box" placeholder="搜索应用名称或描述 (实时筛选)...">
         </div>
     </div>
+
     <div class="header-right"></div>
 </header>
 
@@ -216,7 +209,79 @@
 
 <footer>©️ 2026 All Rights Reserved. Powered by <a href="http://www.ximi.me/" target="_blank" title="希米导航" style="color: #1e293c;">Ximi</a></footer>
 
-<script>let globalLinks=[];let globalCategories=[];window.addEventListener('DOMContentLoaded',()=>{if(typeof settingData==='undefined'||typeof getNavData!=='function'){document.getElementById('results').innerHTML="<h3 style='color:red;'>错误：link-date.js 未正确加载或格式错误</h3>";return}const settings=settingData.user[0];let navData=null;if(settings.encryption==='md5'){if(typeof CryptoJS==='undefined'){alert("加密库未加载，请检查网络！");return}const inputPwd=prompt("请输入访问密码：");if(!inputPwd){document.getElementById('results').innerHTML="<h3>未输入密码，禁止访问。请刷新页面重试。</h3>";return}navData=getNavData(inputPwd)}else{navData=getNavData()}if(!navData){alert("密码错误或数据损坏！");document.getElementById('results').innerHTML="<h3 style='color:red;'>密码错误或数据解密失败，禁止访问。</h3>";return}globalLinks=navData.links||[];globalCategories=navData.categories||[];renderCats(globalCategories);renderCards(globalLinks,'All','');document.getElementById('searchInput').addEventListener('input',(e)=>{const activeCatEl=document.querySelector('.cat-item.active .cat-text');const activeCat=activeCatEl?(activeCatEl.innerText==='全部应用'?'All':activeCatEl.innerText):'All';renderCards(globalLinks,activeCat,e.target.value)})});function toggleSidebar(){document.getElementById('sidebar').classList.toggle('collapsed')}function renderCats(categories){const catList=document.getElementById('cat-list');let html=`<div class="cat-item active"onclick="filterByCat(event, 'All')"><img class="cat-icon"src="https://www.ximi.me/img_src/ai.png"><span class="cat-text">全部应用</span></div>`;html+=categories.map(c=>`<div class="cat-item"onclick="filterByCat(event, '${c.name}')"><img class="cat-icon"src="${c.icon}"onerror="this.src='https://via.placeholder.com/20'"><span class="cat-text">${c.name}</span></div>`).join('');catList.innerHTML=html}function renderCards(allLinks,filter='All',search=''){const resultsDiv=document.getElementById('results');const searchLower=search.toLowerCase();const filtered=allLinks.filter(l=>{const matchCat=(filter==='All'||l.categories===filter);const matchSearch=(l.name.toLowerCase().includes(searchLower)||l.description.toLowerCase().includes(searchLower));return matchCat&&matchSearch});if(filtered.length===0){resultsDiv.innerHTML=`<p style="color:#64748b; padding: 20px;">未找到匹配的应用...</p>`;return}resultsDiv.innerHTML=filtered.map(l=>`<div class="card"onclick="window.open('${l.url}', '_blank')"title="${l.description}"><img src="${l.icon}"onerror="this.src='https://via.placeholder.com/50'"><div class="card-content"><div class="card-top"><h3>${l.name}</h3><span class="tag">${l.categories}</span></div><div class="card-desc">${l.description}</div></div></div>`).join('')}function filterByCat(event,cat){document.querySelectorAll('.cat-item').forEach(el=>el.classList.remove('active'));event.currentTarget.classList.add('active');renderCards(globalLinks,cat,document.getElementById('searchInput').value)}</script>
+<script>
+    // 直接读取 link-date.js 中定义的全局变量 navData
+    // 确保 link-date.js 已经被正确引入
+    const links = (typeof navData !== 'undefined' ? navData.links : []) || [];
+    const categories = (typeof navData !== 'undefined' ? navData.categories : []) || [];
+
+    // 页面加载完成直接渲染，不再使用 fetch
+    window.addEventListener('DOMContentLoaded', () => {
+        if (links.length === 0) {
+            console.error("数据未正确加载，请检查 link-date.js 是否被 HTML 成功引入");
+        }
+        renderCats();
+        renderCards();
+    });
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('collapsed');
+    }
+
+    function renderCats() {
+        const catList = document.getElementById('cat-list');
+        let html = `
+            <div class="cat-item active" onclick="filterByCat(event, 'All')">
+                <img class="cat-icon" src="https://t3.gstatic.cn/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size=128&url=https://www.anthropic.com?utm_source=ai-bio.cn">
+                <span class="cat-text">全部应用</span>
+            </div>`;
+        
+        html += categories.map(c => `
+            <div class="cat-item" onclick="filterByCat(event, '${c.name}')">
+                <img class="cat-icon" src="${c.icon}" onerror="this.src='https://via.placeholder.com/20'">
+                <span class="cat-text">${c.name}</span>
+            </div>
+        `).join('');
+        catList.innerHTML = html;
+    }
+
+    function renderCards(filter = 'All', search = '') {
+        const resultsDiv = document.getElementById('results');
+        const searchLower = search.toLowerCase();
+        
+        const filtered = links.filter(l => {
+            const matchCat = (filter === 'All' || l.categories === filter);
+            const matchSearch = (l.name.toLowerCase().includes(searchLower) || 
+                             l.description.toLowerCase().includes(searchLower));
+            return matchCat && matchSearch;
+        });
+            
+        resultsDiv.innerHTML = filtered.map(l => `
+            <div class="card" onclick="window.open('${l.url}')" title="${l.description}">
+                <img src="${l.icon}" onerror="this.src='https://via.placeholder.com/50'">
+                <div class="card-content">
+                    <div class="card-top">
+                        <h3>${l.name}</h3>
+                        <span class="tag">${l.categories}</span>
+                    </div>
+                    <div class="card-desc">${l.description}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function filterByCat(event, cat) {
+        document.querySelectorAll('.cat-item').forEach(el => el.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        renderCards(cat, document.getElementById('searchInput').value);
+    }
+
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        const activeCatEl = document.querySelector('.cat-item.active .cat-text');
+        const activeCat = activeCatEl ? (activeCatEl.innerText === '全部应用' ? 'All' : activeCatEl.innerText) : 'All';
+        renderCards(activeCat, e.target.value);
+    });
+</script>
 
 </body>
 </html>
